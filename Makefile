@@ -2,7 +2,7 @@
 CFLAGS=-Wall -pthread -std=c++11
 LDFLAGS=-shared -Wl,-rpath,.
 
-all: clean demo
+all: libprogram demo
 
 libxtil: demo_xtil.cc
 	@echo "=== Building XTIL example library [$@.so.1]..."
@@ -26,9 +26,9 @@ libprogram: libsteps demo_program.cc
 	[ -f $@.so.1 ] || ln -s $@.so.1.0.1 $@.so.1
 	[ -f $@.so ]   || ln -s $@.so.1.0.1 $@.so
 
-demo: libprogram demo_core.cc
+demo: demo_core.cc
 	@echo "=== Building DEMO CORE..."
-	g++ $(CFLAGS) -o demo demo_core.cc -Wl,-rpath,. -L. -lprogram
+	g++ $(CFLAGS) -o demo demo_core.cc -ldl
 
 clean:
 	rm -f *.o libxtil* libsteps* libprogram* demo
