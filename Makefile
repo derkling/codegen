@@ -1,5 +1,5 @@
 
-CFLAGS=-Wall -pthread -std=c++11
+CFLAGS=-Wall -pthread -std=c++11 -Iinclude
 LDFLAGS=-shared -Wl,-rpath,.
 
 all: libprogram demo
@@ -26,9 +26,11 @@ libprogram: libsteps demo_program.cc
 	[ -f $@.so.1 ] || ln -s $@.so.1.0.1 $@.so.1
 	[ -f $@.so ]   || ln -s $@.so.1.0.1 $@.so
 
-demo: demo_core.cc
+demo: demo_core.cc demo_generator.cc
 	@echo "=== Building DEMO CORE..."
-	g++ $(CFLAGS) -o demo demo_core.cc -ldl
+	g++ $(CFLAGS) -c -o demo_core.o demo_core.cc
+	g++ $(CFLAGS) -c -o demo_generator.o demo_generator.cc
+	g++ $(CFLAGS) -o demo demo_core.o demo_generator.o -ldl
 
 clean:
 	rm -f *.o libxtil* libsteps* libprogram* demo

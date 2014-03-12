@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+  <loopdef id="loop1" kind="loop">
+    <loopname>First Loop</loopname>
+    <section kind="steps">
+      <member kind="step" id="group__steps__xtil__group1_1ga12029b6fefb6192f220de1f6339c1061" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int step_xtil_function1</definition>
+        <argsstring>(void *bin, void *bout, uint8_t btype, uint16_t bwidth, uint16_t bheight)</argsstring>
+        <name>step_xtil_function1</name>
+        <param>
+          <type>void *</type>
+          <declname>bin</declname>
+	  <value>0</value>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>bout</declname>
+	  <value>0</value>
+        </param>
+        <param>
+          <type>uint8_t</type>
+          <declname>btype</declname>
+	  <value>0</value>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>bwidth</declname>
+	  <value>1024</value>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>bheight</declname>
+	  <value>768</value>
+        </param>
+        <location file="/home/derkling/Documents/Coding/Tattile/Examples/demo_program_steps.h" line="41" column="1"/>
+      </member>
+      <member kind="step" id="group__steps__xtil__group1_1ga12029b6fefb6192f220de1f6339c1061" prot="public" static="no" const="no" explicit="no" inline="no" virt="non-virtual">
+        <type>int</type>
+        <definition>int step_xtil_function2</definition>
+        <argsstring>(void *bin, void *bout, uint8_t btype, uint16_t bwidth, uint16_t bheight)</argsstring>
+        <name>step_xtil_function2</name>
+        <param>
+          <type>void *</type>
+          <declname>bin</declname>
+	  <value>0</value>
+        </param>
+        <param>
+          <type>void *</type>
+          <declname>bout</declname>
+	  <value>0</value>
+        </param>
+        <param>
+          <type>uint8_t</type>
+          <declname>btype</declname>
+	  <value>0</value>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>bwidth</declname>
+	  <value>1024</value>
+        </param>
+        <param>
+          <type>uint16_t</type>
+          <declname>bheight</declname>
+	  <value>768</value>
+        </param>
+        <location file="/home/derkling/Documents/Coding/Tattile/Examples/demo_program_steps.h" line="41" column="1"/>
+      </member>
+    </section>
+  </loopdef>
+</doxygen>
