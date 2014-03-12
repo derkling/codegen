@@ -5,6 +5,8 @@
 
 #include <chrono>
 
+#include "demo_generator.h"
+
 using std::chrono::duration_cast;
 using std::chrono::milliseconds;
 using std::chrono::steady_clock;
@@ -30,6 +32,15 @@ int main(int argc, const char *argv[])
 
 	fprintf(stderr, "CORE Demo\n");
 
+	// Building program from XML
+	fprintf(stderr, ">>> Building program from XML [./program_test.xml]...\n");
+	clock_start();
+	ProgramGenerator pg;
+	pg.Parse();
+	pg.Build();
+	clock_stop();
+	fprintf(stderr, ">>> Program build took: %ld[ms]\n\n", clock_ms());
+
 	// Loading program library
 	fprintf(stderr, "Loading program library [./libprogram.so]... ");
 	void *program_library = dlopen("./libprogram.so", RTLD_NOW);
@@ -47,6 +58,8 @@ int main(int argc, const char *argv[])
 	}
 	fprintf(stderr, "DONE!\n");
 
+	clock_stop();
+	fprintf(stderr, ">>> Overall program entry latency: %ld[ms]\n\n", clock_ms());
 	program_entry();
 
 	dlclose(program_library);

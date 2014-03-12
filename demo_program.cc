@@ -28,15 +28,8 @@ uint8_t MyProgram::Loop() {
 
 	DebugCheck();
 
-	do {
-		step_xtil_function1(0, 0, 0, 1024, 768);
-		DebugCheck();
-	} while (Repeat());
+#include "demo_program_steps.cc"
 
-	do {
-		step_xtil_function2(0, 0, 0, 1024, 768);
-		DebugCheck();
-	} while(Repeat());
 
 ////////////////////////////////////////////////////////////////////////////////
 // [END] GENERATED CODE
