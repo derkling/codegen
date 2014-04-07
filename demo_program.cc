@@ -9,9 +9,19 @@
 class MyProgram : public ProgramControlBlock {
 	uint8_t Setup();
 	uint8_t Loop();
+	uint8_t Cleanup();
 };
 
 uint8_t MyProgram::Setup() {
+
+// #include "demo_program_setup.cc"
+
+	return 0;
+}
+
+uint8_t MyProgram::Cleanup() {
+
+// #include "demo_program_cleanup.cc"
 
 	return 0;
 }

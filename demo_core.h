@@ -130,6 +130,11 @@ public:
 		return 0;
 	}
 
+	virtual uint8_t Cleanup() {
+		printf("[%10s] onClenaup\n", name);
+		return 0;
+	}
+
 	template<typename Sfnc, class ...Args>
 	void Step(Sfnc sf, Args... args) {
 		std::cout << ">>> Step wrapper BEGIN" << std::endl;
@@ -176,6 +181,7 @@ private:
 			if (ret)
 				break;
 		}
+		Cleanup();
 		ul.lock();
 		done = true;
 		status_cv.notify_all();
