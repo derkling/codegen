@@ -8,13 +8,18 @@
 
 #include <stdio.h>
 
+#include <unistd.h>
+#include <sys/syscall.h>
+
+
 class ProgramControlBlock;
 typedef std::shared_ptr<ProgramControlBlock> pcb_t;
 
 class ProgramControlBlock {
 public:
 
-	ProgramControlBlock() {
+	ProgramControlBlock(const char *name = "undef") :
+		name(name), tid(0) {
 		executor_thd = std::thread(&ProgramControlBlock::Executor, this);
 		executor_thd.detach();
 	}
@@ -131,6 +136,11 @@ public:
 		std::cout << "<<< Step wrapper  END" << std::endl;
 	}
 
+protected:
+
+	const char *name;
+	pid_t tid;
+
 private:
 	bool running = false;
 	bool done = false;
@@ -149,6 +159,10 @@ private:
 	uint8_t Executor() {
 		std::unique_lock<std::mutex> ul(status_mtx, std::defer_lock);
 		uint8_t ret = 0;
+
+		// Initialize thread identifier
+		tid = syscall(SYS_gettid);
+
 		printf("Program Loading...\n");
 		Setup();
 		WaitStart();
