@@ -35,9 +35,13 @@ public:
 		running = true;
 		status_cv.notify_all();
 		printf("[%10s] RUN\n", name);
+	}
+
+	inline void WaitCompletion() {
+		std::unique_lock<std::mutex> ul(status_mtx);
 		while(!done)
 			status_cv.wait(ul);
-		printf("=== Run END ===\n");
+		printf("[%10s] COMPLETED\n", name);
 	}
 
 	inline void Stop() {

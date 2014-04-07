@@ -43,6 +43,7 @@ extern "C" {
 void program_entry() {
 	pcb_t pcb1 = pcb_t(new MyProgram());
 	pcb1->Run();
+	pcb2->WaitCompletion();
 }
 
 }
