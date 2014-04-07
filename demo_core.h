@@ -6,7 +6,7 @@
 #include <thread>
 #include <iostream>
 
-#include <stdio.h>
+#include <cstdio>
 
 #include <unistd.h>
 #include <sys/syscall.h>
@@ -34,7 +34,7 @@ public:
 		std::unique_lock<std::mutex> ul(status_mtx);
 		running = true;
 		status_cv.notify_all();
-		printf("=== Run START ===\n");
+		printf("[%10s] RUN\n", name);
 		while(!done)
 			status_cv.wait(ul);
 		printf("=== Run END ===\n");
@@ -121,7 +121,7 @@ public:
 	};
 	virtual uint8_t Loop() {
 		std::unique_lock<std::mutex> ul(dbg_mtx);
-		printf("Program LOOP\n");
+		printf("[%10s] onLoop\n", name);
 		status_cv.wait_for(ul, std::chrono::seconds(5));
 		return 0;
 	}
@@ -163,10 +163,10 @@ private:
 		// Initialize thread identifier
 		tid = syscall(SYS_gettid);
 
-		printf("Program Loading...\n");
+		printf("[%10s] SETUP\n", name);
 		Setup();
 		WaitStart();
-		printf("Program Starting...\n");
+		printf("[%10s] STARTED\n", name);
 		while (!Done()) {
 			ret = Loop();
 			if (ret)
@@ -175,7 +175,7 @@ private:
 		ul.lock();
 		done = true;
 		status_cv.notify_all();
-		printf("Program Terminated...\n");
+		printf("[%10s] TERMINATED\n", name);
 		return ret;
 	}
 
