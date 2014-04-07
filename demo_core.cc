@@ -32,6 +32,7 @@ int main(int argc, const char *argv[])
 
 	fprintf(stderr, "CORE Demo\n");
 
+#ifndef EXAMPLE_NETWORK
 	// Building program from XML
 	fprintf(stderr, ">>> Building program from XML [./program_test.xml]...\n");
 	clock_start();
@@ -40,6 +41,7 @@ int main(int argc, const char *argv[])
 	pg.Build();
 	clock_stop();
 	fprintf(stderr, ">>> Program build took: %ld[ms]\n\n", clock_ms());
+#endif
 
 	// Loading program library
 	fprintf(stderr, "Loading program library [./libprogram.so]... ");

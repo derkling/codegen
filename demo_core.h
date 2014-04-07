@@ -5,12 +5,14 @@
 #include <mutex>
 #include <thread>
 #include <iostream>
+#include <vector>
 
 #include <cstdio>
 
 #include <unistd.h>
 #include <sys/syscall.h>
 
+#include "sync_barrier.h"
 
 class ProgramControlBlock;
 typedef std::shared_ptr<ProgramControlBlock> pcb_t;
@@ -25,6 +27,14 @@ public:
 	}
 
 	virtual ~ProgramControlBlock() {};
+
+	inline void AddInBarrier(pIntBarrier_t pb) {
+		in_barriers.push_back(pb);
+	}
+
+	inline void AddOutBarrier(pIntBarrier_t pb) {
+		out_barriers.push_back(pb);
+	}
 
 	inline bool Running() const {
 		return running;
@@ -120,9 +130,11 @@ public:
 	}
 
 	virtual uint8_t Setup() {
-		printf("Program SETUP\n");
+		printf("[%10s] onSetup, in: %lu, out: %lu\n",
+				name, in_barriers.size(), out_barriers.size());
 		return 0;
 	};
+
 	virtual uint8_t Loop() {
 		std::unique_lock<std::mutex> ul(dbg_mtx);
 		printf("[%10s] onLoop\n", name);
@@ -150,7 +162,11 @@ protected:
 	const char *name;
 	pid_t tid;
 
+	std::vector<pIntBarrier_t> in_barriers;
+	std::vector<pIntBarrier_t> out_barriers;
+
 private:
+
 	bool running = false;
 	bool done = false;
 	std::condition_variable status_cv;
