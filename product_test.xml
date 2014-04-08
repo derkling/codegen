@@ -82,19 +82,19 @@
   <program id="1" name="SimpleNetworkExample">
 
     <!-- Synchronization buffers -->
-    <link id="1" name="Source2Adder" type="IntBarrier" ccount="1" />
-    <link id="2" name="Adder2Sink"   type="IntBarrier" ccount="1" />
+    <link id="1" name="Src2Add" type="IntBarrier" ccount="1" />
+    <link id="2" name="Add2Snk" type="IntBarrier" ccount="1" />
 
     <!-- Program Control Blocks and Pads connections -->
-    <pcb id="1" name="Source" type="SeqGen"   >
-      <output   name="Source2Adder"          />
+    <pcb id="1" name="Src" type="SeqGen"    >
+      <output   name="Src2Add"             />
     </pcb>
-    <pcb id="2" name="Adder" type="SeqAdd1S"  >
-      <input    name="Source2Adder"          />
-      <output   name="Adder2Sink"            />
+    <pcb id="2" name="Add" type="SeqAdd1S"  >
+      <input    name="Src2Add"             />
+      <output   name="Add2Snk"             />
     </pcb>
-    <pcb id="3" name="Sink"   type="SeqSnk"   >
-      <input    name="Adder2Sink"            />
+    <pcb id="3" name="Snk"   type="SeqSnk"  >
+      <input    name="Add2Snk"             />
     </pcb>
 
   </program>
@@ -110,7 +110,7 @@
     <link id="5" name="RA2_2_SNK" type="IntBarrier" ccount="1" />
 
     <!-- Program Control Blocks and Pads connections -->
-    <pcb id="1" name="Source" type="SeqGen"   >
+    <pcb id="1" name="SRC" type="SeqGen"      >
       <output   name="SRC_2_LR1"             />
     </pcb>
 
@@ -118,7 +118,7 @@
       <input    name="SRC_2_LR1"             />
       <output   name="LA1_2_LA2"             />
     </pcb>
-    <pcb id="3" name="LR1" type="SeqAdd1S"    >
+    <pcb id="3" name="RA1" type="SeqAdd1S"    >
       <input    name="SRC_2_LR1"             />
       <output   name="RA1_2_RA2"             />
     </pcb>
@@ -132,7 +132,7 @@
       <output   name="RA2_2_SNK"             />
     </pcb>
 
-    <pcb id="6" name="Sink"   type="SeqCmp"   >
+    <pcb id="6" name="SNK" type="SeqCmp"      >
       <input    name="LA2_2_SNK"             />
       <input    name="RA2_2_SNK"             />
     </pcb>
