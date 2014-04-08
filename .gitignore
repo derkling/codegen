@@ -3,3 +3,4 @@
 *.so*
 cscope*
 Doxygen
+gen/*
