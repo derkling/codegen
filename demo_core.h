@@ -149,12 +149,12 @@ public:
 
 	template<typename Sfnc, class ...Args>
 	void Step(Sfnc sf, Args... args) {
-		std::cout << ">>> Step wrapper BEGIN" << std::endl;
+		// std::cout << ">>> Step wrapper BEGIN" << std::endl;
 		do {
 			sf(args...);
 			DebugCheck();
 		} while (Repeat());
-		std::cout << "<<< Step wrapper  END" << std::endl;
+		// std::cout << "<<< Step wrapper  END" << std::endl;
 	}
 
 protected:
