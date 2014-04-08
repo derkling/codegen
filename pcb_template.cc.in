@@ -31,7 +31,7 @@ uint8_t MyProgram::Cleanup() {
 }
 
 uint8_t MyProgram::Loop() {
-	printf("Loops remaining %d\n", loops--);
+	printf("[%10s] Loops remaining %d\n", name, loops--);
 	if (loops <= 0)
 		return 1;
 
