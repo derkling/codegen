@@ -10,6 +10,7 @@ public:
 	MyProgram(const char *name = "Undef") :
 		ProgramControlBlock(name) {};
 private:
+	int8_t loops = 5;
 	uint8_t Setup();
 	uint8_t Loop();
 	uint8_t Cleanup();
@@ -30,9 +31,8 @@ uint8_t MyProgram::Cleanup() {
 }
 
 uint8_t MyProgram::Loop() {
-	static uint8_t loops = 5;
 	printf("Loops remaining %d\n", loops--);
-	if (!loops)
+	if (loops <= 0)
 		return 1;
 
 	DebugCheck();
