@@ -1,0 +1,144 @@
+<?xml version='1.0' encoding='UTF-8' standalone='no'?>
+<doxygen xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="compound.xsd" version="1.8.6">
+
+  <!-- Sequence Generator -->
+  <pcb id="source" name="SeqGen">
+    <pads>
+      <out_barrier type="int *" name="bo1" value="bo1" />
+    </pads>
+    <steps>
+      <step id="step_xtil_sequence_generator">
+        <param type="int *"   name="bo1"   value="bo1" />
+        <param type="uint8_t" name="count" value="5" />
+      </step>
+    </steps>
+  </pcb>
+
+  <!-- +1 Adder Filter -->
+  <pcb id="adder" name="SeqAdd1S">
+    <pads>
+      <in_barrier  type="int *" name="bi1" value="bi1"/>
+      <out_barrier type="int *" name="bo1" value="bo1" />
+    </pads>
+    <steps>
+      <step id="step_xtil_sequence_adder">
+        <param type="int *"   name="bi1"   value="bi1" />
+        <param type="int *"   name="bo1"   value="bo1" />
+        <param type="uint8_t" name="value" value="1" />
+      </step>
+    </steps>
+  </pcb>
+
+  <!-- +2 Adder Filter -->
+  <pcb id="adder" name="SeqAdd2S">
+    <pads>
+      <in_barrier  type="int *" name="bi1" value="bi1"/>
+      <out_barrier type="int *" name="bo1" value="bo1" />
+    </pads>
+    <buffers>
+      <buffer type="int *" name="ib1" value="ib1" />
+    </buffers>
+    <steps>
+      <step id="step_xtil_sequence_adder">
+        <param type="int *"   name="bi1"   value="bi1" />
+        <param type="int *"   name="ib1"   value="ib1" />
+        <param type="uint8_t" name="value" value="1" />
+      </step>
+      <step id="step_xtil_sequence_adder">
+        <param type="int *"   name="ib1"   value="ib1" />
+        <param type="int *"   name="bo1"   value="bo1" />
+        <param type="uint8_t" name="value" value="1" />
+      </step>
+    </steps>
+  </pcb>
+
+  <!-- Sequence Consumer -->
+  <pcb id="sink" name="SeqSnk">
+    <pads>
+      <in_barrier type="int *" name="bi1" value="bi1" />
+    </pads>
+    <steps>
+      <step id="step_xtil_sequence_consumer">
+        <param type="int *" name="bi1" value="bi1" />
+      </step>
+    </steps>
+  </pcb>
+
+  <!-- Sequence Comparator -->
+  <pcb id="sink" name="SeqCmp">
+    <pads>
+      <in_barrier type="int *" name="bi1" value="bi1" />
+      <in_barrier type="int *" name="bi2" value="bi2" />
+    </pads>
+    <steps>
+      <step id="step_xtil_sequence_compator">
+        <param type="int *" name="bi1" value="bi1" />
+        <param type="int *" name="bi2" value="bi2" />
+      </step>
+    </steps>
+  </pcb>
+
+  <!-- Program "SimpleNetworkExample" -->
+  <program id="1" name="SimpleNetworkExample">
+
+    <!-- Synchronization buffers -->
+    <link id="1" name="Source2Adder" type="IntBarrier" ccount="1" />
+    <link id="2" name="Adder2Sink"   type="IntBarrier" ccount="1" />
+
+    <!-- Program Control Blocks and Pads connections -->
+    <pcb id="1" name="Source" type="SeqGen"   >
+      <output   name="Source2Adder"          />
+    </pcb>
+    <pcb id="2" name="Adder" type="SeqAdd1S"  >
+      <input    name="Source2Adder"          />
+      <output   name="Adder2Sink"            />
+    </pcb>
+    <pcb id="3" name="Sink"   type="SeqSnk"   >
+      <input    name="Adder2Sink"            />
+    </pcb>
+
+  </program>
+
+  <!-- Program "ComplexNetworkExample" -->
+  <program id="2" name="ComplexNetworkExample">
+
+    <!-- Synchronization buffers -->
+    <link id="1" name="SRC_2_LR1" type="IntBarrier" ccount="2" />
+    <link id="2" name="LA1_2_LA2" type="IntBarrier" ccount="1" />
+    <link id="3" name="RA1_2_RA2" type="IntBarrier" ccount="1" />
+    <link id="4" name="LA2_2_SNK" type="IntBarrier" ccount="1" />
+    <link id="5" name="RA2_2_SNK" type="IntBarrier" ccount="1" />
+
+    <!-- Program Control Blocks and Pads connections -->
+    <pcb id="1" name="Source" type="SeqGen"   >
+      <output   name="SRC_2_LR1"             />
+    </pcb>
+
+    <pcb id="2" name="LA1" type="SeqAdd1S"    >
+      <input    name="SRC_2_LR1"             />
+      <output   name="LA1_2_LA2"             />
+    </pcb>
+    <pcb id="3" name="LR1" type="SeqAdd1S"    >
+      <input    name="SRC_2_LR1"             />
+      <output   name="RA1_2_RA2"             />
+    </pcb>
+
+    <pcb id="4" name="LA2" type="SeqAdd2S"    >
+      <input    name="LA1_2_LA2"             />
+      <output   name="LA2_2_SNK"             />
+    </pcb>
+    <pcb id="5" name="RA2" type="SeqAdd2S"    >
+      <input    name="RA1_2_RA2"             />
+      <output   name="RA2_2_SNK"             />
+    </pcb>
+
+    <pcb id="6" name="Sink"   type="SeqCmp"   >
+      <input    name="LA2_2_SNK"             />
+      <input    name="RA2_2_SNK"             />
+    </pcb>
+
+  </program>
+
+</doxygen>
+
+<!-- vim: set tabstop=2 shiftwidth=2 expandtab filetype=xml : -->

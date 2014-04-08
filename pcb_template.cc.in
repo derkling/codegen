@@ -1,0 +1,44 @@
+
+#include <stdint.h>
+#include <stdio.h>
+
+#include "demo_core.h"
+#include "demo_steps.h"
+
+class MyProgram : public ProgramControlBlock {
+public:
+	MyProgram(const char *name = "Undef") :
+		ProgramControlBlock(name) {};
+private:
+	uint8_t Setup();
+	uint8_t Loop();
+	uint8_t Cleanup();
+};
+
+uint8_t MyProgram::Setup() {
+
+#include "pcb_MyProgram_setup.cc.in"
+
+	return 0;
+}
+
+uint8_t MyProgram::Cleanup() {
+
+#include "pcb_MyProgram_clean.cc.in"
+
+	return 0;
+}
+
+uint8_t MyProgram::Loop() {
+	static uint8_t loops = 5;
+	printf("Loops remaining %d\n", loops--);
+	if (!loops)
+		return 1;
+
+	DebugCheck();
+
+#include "pcb_MyProgram_steps.cc.in"
+
+	return 0;
+}
+

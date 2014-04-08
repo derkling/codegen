@@ -1,5 +1,6 @@
 
 #include <stdint.h>
+#include <stdio.h>
 #include "demo_xtil.h"
 
 extern "C" {
@@ -45,6 +46,51 @@ step_xtil_function3(
 	xtil_function1(bin, bout, btype, 800, 600);
 
 	return 0;
+}
+
+
+/*
+ * XTIL - Integer Sequence Functions
+ */
+
+int
+step_xtil_sequence_generator(
+	int* bout,
+	uint8_t count
+	) {
+	static int number = 1;
+
+	bout[0] = number++;
+	return 0;
+}
+
+int
+step_xtil_sequence_adder(
+	int* bin,
+	int* bout,
+	uint8_t
+	) {
+	bout[0] = bin[0] + 1;
+	return 0;
+}
+
+int
+step_xtil_sequence_consumer(
+	int* bin
+	) {
+	return 0;
+}
+
+int
+step_xtil_sequence_compator(
+	int* bin1,
+	int* bin2
+	) {
+	int result;
+	result = bin1[0] - bin2[0];
+	fprintf(stderr, "Check result (%d == 0): %s\n",
+			result, (result != 0) ? "FAILED" : "Success");
+	return result;
 }
 
 

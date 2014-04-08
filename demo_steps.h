@@ -19,7 +19,6 @@ These are the documentation of tht main functions
 
 */
 
-
 ////////////////////////////////////////////////////////////////////////////////
 /**
 @defgroup steps_xtil XTIL Functions
@@ -108,6 +107,50 @@ step_xtil_function5(
 	uint16_t bwidth,
 	uint16_t bheight
 	);
+
+
+/**
+ * @defgroup steps_xtil_sequence Integer Sequence Example Functions
+ * @ingroup steps_xtil
+ *
+ * This is a set of Integer numbers processing XTIL Functions
+ */
+
+/**
+ * @brief Integer Number Source
+ * @ingroup steps_xtil_sequence
+ */
+int
+step_xtil_sequence_generator(
+	int *bout,
+	uint8_t count);
+
+/**
+ * @brief Integer Number 1 Adder
+ * @ingroup steps_xtil_sequence
+ */
+int
+step_xtil_sequence_adder(
+	int *bin,
+	int *bout,
+	uint8_t value);
+
+/**
+ * @brief Integer Number Sink
+ * @ingroup steps_xtil_sequence
+ */
+int
+step_xtil_sequence_consumer(
+	int *bin);
+
+/**
+ * @brief Integer Numbers Comparator
+ * @ingroup steps_xtil_sequence
+ */
+int
+step_xtil_sequence_compator(
+	int *bin1,
+	int *bin2);
 
 ////////////////////////////////////////////////////////////////////////////////
 /**

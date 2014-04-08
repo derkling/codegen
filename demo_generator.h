@@ -17,3 +17,19 @@ private:
 	bool ParseStep(rapidxml::xml_node<>* node);
 	bool ParsePrms(rapidxml::xml_node<>* node);
 };
+
+class ProductGenerator {
+public:
+	bool Parse();
+	bool Build();
+private:
+	std::string xml_source = "product_test.xml";
+	std::string product_header = "gen/demo_product.h";
+	std::string product_source = "gen/demo_product.cc";
+	std::ofstream product_hfile;
+	std::ofstream product_cfile;
+
+	bool ParsePCB(rapidxml::xml_node<>* node);
+	bool ParseProgram(rapidxml::xml_node<>* node);
+
+};
