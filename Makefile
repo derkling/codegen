@@ -1,5 +1,5 @@
 
-CFLAGS=-Wall -pthread -std=c++11 -Iinclude -I.
+CFLAGS=-Wall -pthread -std=c++11 -I. -Iinclude
 LDFLAGS=-shared -Wl,-rpath,.
 
 all: libprogram demo
@@ -30,7 +30,11 @@ libproduct.so.1.0.1: demo_product.cc
 	[ -f libproduct.so.1 ] || ln -s libproduct.so.1.0.1 libproduct.so.1
 	[ -f libproduct.so ]   || ln -s libproduct.so.1.0.1 libproduct.so
 
-demo: demo_core.cc demo_generator.cc libsteps.so.1.0.1
+precompiled.h.gch: precompiled.h
+	@echo "=== Building PreCompiled headers..."
+	g++ $(CFLAGS) -o precompiled.h.gch precompiled.h
+
+demo: demo_core.cc demo_generator.cc libsteps.so.1.0.1 precompiled.h.gch
 	@echo "=== Building DEMO CORE..."
 	g++ $(CFLAGS) -c -o demo_core.o demo_core.cc
 	g++ $(CFLAGS) -c -o demo_generator.o demo_generator.cc

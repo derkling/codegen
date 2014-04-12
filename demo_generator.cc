@@ -94,6 +94,9 @@ bool ProgramGenerator::Build() {
 // Product Generator
 ////////////////////////////////////////////////////////////////////////////////
 
+#define PRODUCT_HEADERS						\
+"\n#include <precompiled.h>"
+
 #define PRODUCT							\
 "\nextern \"C\" {"						\
 "\n"								\
@@ -118,6 +121,7 @@ bool ProductGenerator::Parse() {
 	std::cout << "Loading (" << inFile.size() << " Bytes) XML file...";
 
 	product_cfile.open(product_source, std::ios_base::out | std::ios_base::trunc);
+	product_cfile << PRODUCT_HEADERS;
 
 	// Parse PCBs
 	rx::xml_node<> *pcb = doc.first_node("doxygen")->first_node("pcb");
@@ -151,11 +155,7 @@ bool ProductGenerator::Parse() {
 }
 
 #define PRODUCT_PCB(NAME)					\
-"\n#include <stdint.h>"						\
-"\n#include <stdio.h>"						\
 "\n"								\
-"\n#include <demo_core.h>"					\
-"\n#include <demo_steps.h>"					\
 "\nclass " << NAME << " : public ProgramControlBlock {"		\
 "\npublic:"							\
 "\n\t" << NAME << "(const char *name = \"" << NAME << "\") :"	\
@@ -292,8 +292,6 @@ bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {
 }
 
 #define PRODUCT_PROGRAM						\
-"\n#include <demo_core.h>"					\
-"\n#include <demo_steps.h>"					\
 "\n"								\
 "\nextern \"C\" {"						\
 "\n"
