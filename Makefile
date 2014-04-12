@@ -65,6 +65,7 @@ libproduct: libsteps $(PCBo) $(PRGo) gen/demo_product.cc
 
 demo: demo_core.cc demo_generator.cc
 	@echo "=== Building DEMO CORE..."
+	[ -d gen ] || mkdir gen
 	g++ $(CFLAGS) -c -o demo_core.o demo_core.cc
 	g++ $(CFLAGS) -c -o demo_generator.o demo_generator.cc
 	g++ $(CFLAGS) -o demo demo_core.o demo_generator.o -ldl
