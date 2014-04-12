@@ -55,7 +55,7 @@ program_%.o: program_%.cc gen/pcbs.h
 	@echo "=== Building Program [$@]..."
 	g++ -fPIC -c $(CFLAGS) $< -o $@
 
-libproduct: libsteps $(PCBo) $(PRGo) gen/demo_product.cc
+libproduct: $(PCBo) $(PRGo) gen/demo_product.cc
 	@echo "=== Building PRODUCT demo..."
 	g++ -fPIC -c $(CFLAGS) gen/demo_product.cc -o gen/demo_product.o
 	g++ $(LDFLAGS) -Wl,-soname,$@.so.1 -o $@.so.1.0.1 \
