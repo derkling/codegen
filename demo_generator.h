@@ -27,9 +27,7 @@ public:
 	bool Build();
 private:
 	const std::string xml_source;
-	std::string product_header = "gen/demo_product.h";
-	std::string product_source = "gen/demo_product.cc";
-	std::ofstream product_hfile;
+	std::string product_source = "demo_product.cc";
 	std::ofstream product_cfile;
 
 	bool ParsePCB(rapidxml::xml_node<>* node);

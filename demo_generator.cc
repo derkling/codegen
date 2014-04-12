@@ -94,6 +94,21 @@ bool ProgramGenerator::Build() {
 // Product Generator
 ////////////////////////////////////////////////////////////////////////////////
 
+#define PRODUCT							\
+"\nextern \"C\" {"						\
+"\n"								\
+"\nint product_run(int program_id) {"				\
+"\n"								\
+"\n\tswitch(program_id) {"
+
+#define PRODUCT_DEFAULT						\
+"\n\tdefault:"							\
+"\n\t\treturn -1;\n"						\
+"\n\t} // switch program_id\n"					\
+"\n\treturn 0;\n"						\
+"\n} // product_run\n\n"					\
+"} // extern \"C\""
+
 bool ProductGenerator::Parse() {
 	rx::file<> inFile(xml_source.c_str());
 	rx::xml_document<> doc;
@@ -102,17 +117,7 @@ bool ProductGenerator::Parse() {
 	doc.parse<0>(inFile.data());
 	std::cout << "Loading (" << inFile.size() << " Bytes) XML file...";
 
-	// Setup Product main files
-	product_hfile.open(product_header, std::ios_base::out | std::ios_base::trunc);
-	product_hfile
-		<< "\nextern \"C\" {" << std::endl;
-
 	product_cfile.open(product_source, std::ios_base::out | std::ios_base::trunc);
-	product_cfile
-		<< "\n#include <" << product_header << ">\n"
-		<< "\nextern \"C\" {\n"
-		<< "\nint product_run(int program_id) {\n"
-		<< "\n\tswitch(program_id) {" << std::endl;
 
 	// Parse PCBs
 	rx::xml_node<> *pcb = doc.first_node("doxygen")->first_node("pcb");
@@ -126,70 +131,109 @@ bool ProductGenerator::Parse() {
 		ParseProgram(program);
 	}
 
+	// Add entry to main PRODUCT files
+	product_cfile << PRODUCT;
+	program = doc.first_node("doxygen")->first_node("program");
+	for ( ; program; program = program->next_sibling("program")) {
+		int program_id = atoi(program->first_attribute("id")->value());
+		std::string program_name(program->first_attribute("name")->value());
+		product_cfile << "\n\tcase " << program_id << ":\n"
+			<< "\t\tprogram_" << program_name << "();\n"
+			<< "\t\tbreak;\n";
+	}
 
-	// Complete product file
-	product_cfile
-		<< "\n\tdefault:"
-		<< "\n\t\treturn -1;\n"
-		<< "\n\t} // switch program_id\n"
-		<< "\n\treturn 0;\n"
-		<< "\n} // product_run\n\n"
-		<< "} // extern \"C\"" << std::endl;
+	product_cfile << PRODUCT_DEFAULT << std::endl;
+
 	std::cout << "\n\nGenerate product source file [./demo_product.cc]..." << std::endl;
-	product_hfile
-		<< "\n} // extern \"C\"" << std::endl;
-	std::cout << "Generate product header file [./demo_product.h]..." << std::endl;
-	product_hfile.close();
+	product_cfile.close();
 
 	return true;
 }
 
+#define PRODUCT_PCB(NAME)					\
+"\n#include <stdint.h>"						\
+"\n#include <stdio.h>"						\
+"\n"								\
+"\n#include <demo_core.h>"					\
+"\n#include <demo_steps.h>"					\
+"\nclass " << NAME << " : public ProgramControlBlock {"		\
+"\npublic:"							\
+"\n\t" << NAME << "(const char *name = \"" << NAME << "\") :"	\
+"\n\t\tProgramControlBlock(name) {};"				\
+"\nprivate:"							\
+"\n\tint8_t loops = 5;"						\
+"\n\tuint8_t Setup();"						\
+"\n\tuint8_t Loop();"						\
+"\n\tuint8_t Cleanup();"					\
+"\n};"								\
+"\n"
+
+#define PRODUCT_PCB_SETUP(NAME)					\
+"\nuint8_t " << NAME << "::Setup() {"
+
+#define PRODUCT_PCB_CLEANUP(NAME)				\
+"\n\treturn 0;"							\
+"\n}"								\
+"\nuint8_t " << NAME << "::Cleanup() {"
+
+#define PRODUCT_PCB_LOOP(NAME)					\
+"\n\treturn 0;"							\
+"\n}"								\
+"\nuint8_t " << NAME << "::Loop() {"				\
+"\n\tprintf(\"[%10s] Loops remaining %d\\n\", name, loops--);"	\
+"\n\tif (loops <= 0)"						\
+"\n\t\treturn 1;"						\
+"\n"								\
+"\n\tDebugCheck();"						\
+"\n"
+
 bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {
 	rx::xml_node<> *node;
-	std::ofstream clean_file;
-	std::ofstream setup_file;
-	std::ofstream steps_file;
-	std::ofstream pcb_file;
 
 	// Get PCB name
 	std::string name(pcb->first_attribute("name")->value());
 	std::cout << "\n\nParse PCB: " << name << "..." << std::endl;
 
-	std::string cleanFn = std::string("gen/pcb_") + name + "_clean.cc.in";
-	std::string setupFn = std::string("gen/pcb_") + name + "_setup.cc.in";
-	std::string stepsFn = std::string("gen/pcb_") + name + "_steps.cc.in";
-	std::string pcbFn   = std::string("gen/pcb_") + name + ".cc";
+	// Generate PCB Header
+	product_cfile << PRODUCT_PCB(name);
 
-	// Setup output files
-	clean_file.open(cleanFn.c_str(), std::ios_base::out | std::ios_base::trunc);
-	setup_file.open(setupFn.c_str(), std::ios_base::out | std::ios_base::trunc);
-	steps_file.open(stepsFn.c_str(), std::ios_base::out | std::ios_base::trunc);
-	pcb_file.open(pcbFn.c_str(),     std::ios_base::out | std::ios_base::trunc);
+	// Generate PCB Setup
+	product_cfile << PRODUCT_PCB_SETUP(name);
+	// TODO add here PCB Setup generation
 
-	steps_file << "\n\n" << std::string(80, '/');
-	steps_file << "\n// Consumer Buffers PULL" << std::endl;
+	// Generate PCB Cleanup
+	product_cfile << PRODUCT_PCB_CLEANUP(name);
+	// TODO add here PCB Cleanup generation
+
+	// Generate PCB Loop
+	product_cfile << PRODUCT_PCB_LOOP(name);
+
+	product_cfile << "\n\n\t" << std::string(80, '/');
+	product_cfile << "\n\t// Consumer Buffers PULL" << std::endl;
 
 	// Parse input barriers
-	steps_file << "\n// Input buffers" << std::endl;
+	product_cfile << "\n\t// Input buffers";
 	node = pcb->first_node("pads");
 	rx::xml_node<> *inb = (!node) ? nullptr : node->first_node("in_barrier");
 	for (int i = 0 ; inb; inb = inb->next_sibling("in_barrier")) {
-		steps_file << inb->first_attribute("type")->value()
+		product_cfile
+			<< "\n\t" << inb->first_attribute("type")->value()
 			<< " " << inb->first_attribute("name")->value()
 			<< " = in_barriers[" << i++
 			<< "]->pull_buffer(name, tid);"
 			<< std::endl;
 	}
 
-	steps_file << "\n\n" << std::string(80, '/');
-	steps_file << "\n// Output and Local buffers initialization" << std::endl;
+	product_cfile << "\n\n\t" << std::string(80, '/');
+	product_cfile << "\n\t// Output and Local buffers initialization" << std::endl;
 
 	// Parse output barriers
-	steps_file << "\n// Output buffers" << std::endl;
+	product_cfile << "\n\t// Output buffers";
 	node = pcb->first_node("pads");
 	rx::xml_node<> *outb = (!node) ? nullptr : node->first_node("out_barrier");
 	for (int i = 0 ; outb; outb = outb->next_sibling("out_barrier")) {
-		steps_file << outb->first_attribute("type")->value()
+		product_cfile
+			<< "\n\t" << outb->first_attribute("type")->value()
 			<< " " << outb->first_attribute("name")->value()
 			<< " = out_barriers[" << i++
 			<< "]->producerBuffer();"
@@ -197,83 +241,73 @@ bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {
 	}
 
 	// Parse local buffers
-	steps_file << "\n// Local buffers";
-	steps_file << "\n// NOTE: These should be recovered via BufferManager";
-	steps_file << "\n//       for the time being this example handles just integer buffers" << std::endl;
+	product_cfile << "\n\t// Local buffers";
+	product_cfile << "\n\t// NOTE: These should be recovered via BufferManager";
+	product_cfile << "\n\t//       for the time being this example handles just integer buffers";
 	node = pcb->first_node("buffers");
 	rx::xml_node<> *lb = (!node) ? nullptr : node->first_node("buffer");
 	for ( ; lb; lb = lb->next_sibling("buffer")) {
-		steps_file << "int" //lb->first_attribute("type")->value()
+		product_cfile
+			<< "\n\t"
+			<< "int" //lb->first_attribute("type")->value()
 			<< " " << lb->first_attribute("name")->value()
 			<< "[] = {0};" << std::endl;
 	}
 
 
-	steps_file << "\n\n" << std::string(80, '/');
-	steps_file << "\n// Processing STEPS" << std::endl;
+	product_cfile << "\n\n\t" << std::string(80, '/');
+	product_cfile << "\n\t// Processing STEPS" << std::endl;
 
 	// Parse Steps
 	node = pcb->first_node("steps");
 	rx::xml_node<> *step = (!node) ? nullptr : node->first_node("step");
 	for (int i = 0 ; step; step = step->next_sibling("step")) {
-		steps_file << "\n// STEP " << ++i << "\n";
-		steps_file << "Step(" << step->first_attribute("id")->value();
+		product_cfile << "\n\t// STEP " << ++i;
+		product_cfile << "\n\tStep(" << step->first_attribute("id")->value();
 
 		rx::xml_node<> *param = step->first_node("param");
 		for ( ; param; param = param->next_sibling("param")) {
-			steps_file << ",\n\tstatic_cast<"
+			product_cfile << ",\n\t\tstatic_cast<"
 				<< param->first_attribute("type")->value()
 				<< ">(" << param->first_attribute("value")->value() << ")";
 		}
-		steps_file << ");" << std::endl;
+		product_cfile << ");" << std::endl;
 	}
 
-	steps_file << "\n\n" << std::string(80, '/');
-	steps_file << "\n// Producer Buffers PUSH" << std::endl;
+	product_cfile << "\n\n\t" << std::string(80, '/');
+	product_cfile << "\n\t// Producer Buffers PUSH" << std::endl;
 
 	// Parse output barriers
 	node = pcb->first_node("pads");
 	outb = (!node) ? nullptr : node->first_node("out_barrier");
 	for (int i = 0 ; outb; outb = node->next_sibling("out_barrier")) {
-		steps_file <<
-			"out_barriers[" << i++ << "]->push_buffer(name);"
+		product_cfile <<
+			"\tout_barriers[" << i++ << "]->push_buffer(name);"
 			<< std::endl;
 	}
 
-	// Build the PCB main file
-	std::string sed_command = std::string("") +
-		"sed -e 's/MyProgram/" + name + "/g' pcb_template.cc.in > gen/pcb_" + name + ".cc";
-	std::cout << "Generate [" << pcbFn << "]..." << std::endl;
-	// std::cout << "\nCommand: " << sed_command << std::endl;
-	std::system(sed_command.c_str());
-
-	clean_file.close();
-	setup_file.close();
-	steps_file.close();
-	pcb_file.close();
+	product_cfile << "\n\treturn 0;\n}\n";
 
 	return true;
 }
 
+#define PRODUCT_PROGRAM						\
+"\n#include <demo_core.h>"					\
+"\n#include <demo_steps.h>"					\
+"\n"								\
+"\nextern \"C\" {"						\
+"\n"
+
+
 bool ProductGenerator::ParseProgram(rapidxml::xml_node<>* program) {
-	std::ofstream program_file;
-	int program_id = atoi(program->first_attribute("id")->value());
+	std::string program_name(program->first_attribute("name")->value());
 	int sb_count = 0;
 
-	// Get Program name
-	std::string program_name(program->first_attribute("name")->value());
 	std::cout << "\n\nParse Program: " << program_name << "..." << std::endl;
 
-	std::string programFn = std::string("gen/program_") + program_name + ".cc";
-
-	// Setup output files
-	program_file.open(programFn.c_str(), std::ios_base::out | std::ios_base::trunc);
-
-	program_file << "\n#include <demo_core.h>";
-	program_file << "\n#include <demo_steps.h>\n";
-	program_file << "\n#include <gen/pcbs.h>\n";
-	program_file << "\nextern \"C\" {\n";
-	program_file << "\nvoid program_" << program_name << "() {\n";
+	// Generate PCB Header
+	product_cfile << PRODUCT_PROGRAM;
+	product_cfile << "\nvoid program_" << program_name << "() {\n";
 
 	// Count required sync buffers
 	rx::xml_node<> *sb = program->first_node("link");
@@ -284,25 +318,25 @@ bool ProductGenerator::ParseProgram(rapidxml::xml_node<>* program) {
 		goto do_pcbs;
 
 	// Pre-allocated buffers (to be replaced by BufferManager calls)
-	program_file << "\n\n\t" << std::string(80, '/');
-	program_file << "\n\t// Pre-Allocated Int (double) buffers\n" << std::endl;
+	product_cfile << "\n\n\t" << std::string(80, '/');
+	product_cfile << "\n\t// Pre-Allocated Int (double) buffers\n" << std::endl;
 
-	program_file << "\tint buffers[" << sb_count << "][2] = {\n\t\t";
+	product_cfile << "\tint buffers[" << sb_count << "][2] = {\n\t\t";
 	while (sb_count--) {
-		program_file << "{0,0}, ";
+		product_cfile << "{0,0}, ";
 	}
-	program_file << "};" << std::endl;
+	product_cfile << "};" << std::endl;
 
 	// Synchronization BARRIERS
-	program_file << "\n\n\t" << std::string(80, '/');
-	program_file << "\n\t// Synchronization BARRIERS\n" << std::endl;
+	product_cfile << "\n\n\t" << std::string(80, '/');
+	product_cfile << "\n\t// Synchronization BARRIERS\n" << std::endl;
 
 	sb = program->first_node("link");
 	for (int i = 0 ; sb; ++i, sb = sb->next_sibling("link")) {
 		const char *name   = sb->first_attribute("name")->value();
 		const char *type   = sb->first_attribute("type")->value();
 		const char *ccount = sb->first_attribute("ccount")->value();
-		program_file << "\tp" << type << "_t " << name
+		product_cfile << "\tp" << type << "_t " << name
 			<< " = p" << type << "_t(new " << type
 			<< "_t(buffers[" << i << "], buffers[" << i << "]+1, "
 			<< "\"" << name << "\", " << ccount << "));\n";
@@ -311,14 +345,14 @@ bool ProductGenerator::ParseProgram(rapidxml::xml_node<>* program) {
 do_pcbs:
 
 	// Program Control Blocks
-	program_file << "\n\n\t" << std::string(80, '/');
-	program_file << "\n\t// ProgramControlBlocks and Connection\n" << std::endl;
+	product_cfile << "\n\n\t" << std::string(80, '/');
+	product_cfile << "\n\t// ProgramControlBlocks and Connection\n" << std::endl;
 
 	rx::xml_node<> *pcb = program->first_node("pcb");
 	for (int i = 1 ; pcb; ++i, pcb = pcb->next_sibling("pcb")) {
 		const char *name = pcb->first_attribute("name")->value();
 		const char *type = pcb->first_attribute("type")->value();
-		program_file << "\t// PCB #" << std::setfill('0') << std::setw(3)
+		product_cfile << "\t// PCB #" << std::setfill('0') << std::setw(3)
 			<< i << ": " << name << "\n\t"
 			<< "pcb_t pcb" << name << " = pcb_t(new "
 			<< type << "(\"" << name << "\"));\n";
@@ -328,7 +362,7 @@ do_pcbs:
 		rx::xml_node<> *ib = pcb->first_node("input");
 		for ( ; ib; ib = ib->next_sibling("input")) {
 			const char *ibname = ib->first_attribute("name")->value();
-			program_file << "\tpcb" << name << "->AddInBarrier("
+			product_cfile << "\tpcb" << name << "->AddInBarrier("
 				<< ibname << ");\n";
 		}
 
@@ -337,49 +371,33 @@ do_pcbs:
 		rx::xml_node<> *ob = pcb->first_node("output");
 		for ( ; ob; ob = ob->next_sibling("output")) {
 			const char *obname = ob->first_attribute("name")->value();
-			program_file << "\tpcb" << name << "->AddOutBarrier("
+			product_cfile << "\tpcb" << name << "->AddOutBarrier("
 				<< obname << ");\n";
 		}
 
 	}
 
 	// Network Startup
-	program_file << "\n\n\t" << std::string(80, '/');
-	program_file << "\n\t// Program START\n" << std::endl;
+	product_cfile << "\n\n\t" << std::string(80, '/');
+	product_cfile << "\n\t// Program START\n" << std::endl;
 
 	pcb = program->first_node("pcb");
 	for ( ; pcb; pcb = pcb->next_sibling("pcb")) {
 		const char *name = pcb->first_attribute("name")->value();
-		program_file << "\tpcb" << name << "->Run();\n";
+		product_cfile << "\tpcb" << name << "->Run();\n";
 	}
 
 	// Wait Completion
-	program_file << "\n\n\t" << std::string(80, '/');
-	program_file << "\n\t// Completion WAIT\n" << std::endl;
+	product_cfile << "\n\n\t" << std::string(80, '/');
+	product_cfile << "\n\t// Completion WAIT\n" << std::endl;
 
 	pcb = program->first_node("pcb");
 	for ( ; pcb; pcb = pcb->next_sibling("pcb")) {
 		const char *name = pcb->first_attribute("name")->value();
-		program_file << "\tpcb" << name << "->WaitCompletion();\n";
+		product_cfile << "\tpcb" << name << "->WaitCompletion();\n";
 	}
 
-	program_file << "\n} // program\n} // extern \"C\"" << std::endl;
-
-	std::cout << "Generate [" << programFn << "]..." << std::endl;
-	program_file.close();
-
-	if (!product_cfile)
-		return true;
-
-	// Add entry to main PRODUCT files
-	product_cfile << "\n\tcase " << program_id << ":\n"
-		<< "\t\tprogram_" << program_name << "();\n"
-		<< "\t\tbreak;\n";
-
-	product_hfile
-		<< "\n\t// Program #" << std::setfill('0') << std::setw(2) << program_id
-		<< "\n\tvoid program_" << program_name << "();\n";
-
+	product_cfile << "\n} // program\n} // extern \"C\"" << std::endl;
 	return true;
 }
 
