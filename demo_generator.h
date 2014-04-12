@@ -20,10 +20,13 @@ private:
 
 class ProductGenerator {
 public:
+	ProductGenerator(const char *xml = "build_test_100.xml") :
+		xml_source(xml) {
+	};
 	bool Parse();
 	bool Build();
 private:
-	std::string xml_source = "build_test_100.xml";
+	const std::string xml_source;
 	std::string product_header = "gen/demo_product.h";
 	std::string product_source = "gen/demo_product.cc";
 	std::ofstream product_hfile;

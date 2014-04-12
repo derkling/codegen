@@ -28,19 +28,22 @@ int main(int argc, const char *argv[])
 	auto clock_ms = [&]() {
 		return duration_cast<milliseconds>(stop-start).count();
 	};
+	const char * product_xml = "product_test.xml";
 	int program_id = 1;
 
 	if (argc > 1)
-		program_id = atoi(argv[1]);
+		product_xml = argv[1];
+	if (argc > 2)
+		program_id = atoi(argv[2]);
 
 	fprintf(stderr, "CORE Demo\n");
 	// fprintf(stderr, "%d concurrent threads are supported.\n",
 	// 		std::thread::hardware_concurrency());
 
 	// Building a product from XML
-	fprintf(stderr, ">>> Building product from XML [./product_test.xml]...\n");
+	fprintf(stderr, ">>> Building product from XML [%s]...\n", product_xml);
 	clock_start();
-	ProductGenerator pg;
+	ProductGenerator pg(product_xml);
 	pg.Parse();
 	pg.Build();
 	clock_stop();
