@@ -23,7 +23,7 @@ public:
 	bool Parse();
 	bool Build();
 private:
-	std::string xml_source = "product_test.xml";
+	std::string xml_source = "build_test_100.xml";
 	std::string product_header = "gen/demo_product.h";
 	std::string product_source = "gen/demo_product.cc";
 	std::ofstream product_hfile;

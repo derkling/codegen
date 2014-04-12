@@ -67,7 +67,6 @@ int main(int argc, const char *argv[])
 	fprintf(stderr, ">>> Overall product entry latency: %ld[ms]\n\n", clock_ms());
 
 	fprintf(stderr, "Running Program ID: %d\n\n", program_id);
-	product_run(program_id);
 
 	dlclose(product_library);
 	return 0;
