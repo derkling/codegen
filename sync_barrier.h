@@ -1,4 +1,7 @@
 
+#ifndef SYNC_BARRIER_H
+#define SYNC_BARRIER_H
+
 #include <condition_variable>
 #include <memory>
 #include <mutex>
@@ -142,4 +145,6 @@ private:
 
 typedef SyncBarrier<int*> IntBarrier_t;
 typedef std::shared_ptr<IntBarrier_t> pIntBarrier_t;
+
+#endif /* end of include guard: SYNC_BARRIER_H */
 

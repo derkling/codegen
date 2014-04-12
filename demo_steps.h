@@ -1,4 +1,7 @@
 
+#ifndef DEMO_STEPS_H
+#define DEMO_STEPS_H
+
 extern "C" {
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -189,4 +192,6 @@ step_local(
 	);
 
 } // extern C
+
+#endif /* end of include guard: DEMO_STEPS_H */
 

@@ -1,4 +1,7 @@
 
+#ifndef DEMO_CORE_H
+#define DEMO_CORE_H
+
 #include <chrono>
 #include <condition_variable>
 #include <memory>
@@ -206,4 +209,6 @@ private:
 	}
 
 };
+
+#endif /* end of include guard: DEMO_CORE_H */
 
