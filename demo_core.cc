@@ -51,6 +51,9 @@ int main(int argc, const char *argv[])
 	clock_start();
 	ProductGenerator pg(product_xml);
 	pg.Parse();
+	clock_stop();
+	fprintf(stderr, ">>> XML parsing took: " PRId64 "[ms]\n\n", clock_ms());
+	clock_start();
 	pg.Build();
 	clock_stop();
 	fprintf(stderr, ">>> Product build took: " PRId64 "[ms]\n\n", clock_ms());
