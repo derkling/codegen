@@ -16,6 +16,8 @@
 
 #include <sync_barrier.h>
 
+extern template class std::vector<pIntBarrier_t>;
+
 class ProgramControlBlock {
 public:
 
@@ -81,6 +83,7 @@ private:
 };
 
 typedef std::shared_ptr<ProgramControlBlock> pcb_t;
+extern template class std::shared_ptr<ProgramControlBlock>;
 
 #endif /* end of include guard: PROGRAM_CONTROL_BLOCK_H */
 

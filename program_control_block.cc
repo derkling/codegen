@@ -1,6 +1,9 @@
 
 #include <program_control_block.h>
 
+template class std::vector<pIntBarrier_t>;
+template class std::shared_ptr<ProgramControlBlock>;
+
 #if __WORDSIZE == 64
 # define PRIu32 "%lu"
 #else
