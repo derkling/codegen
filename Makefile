@@ -33,7 +33,7 @@ libproduct.so.1.0.1: demo_product.cc
 precompile: precompiled.h.gch sync_barrier.o program_control_block.o
 precompiled.h.gch: precompiled.h
 	@echo "=== Building PreCompiled headers..."
-	g++ $(CFLAGS) -o precompiled.h.gch precompiled.h
+	g++ -fPIC $(CFLAGS) precompiled.h
 sync_barrier.o: sync_barrier.cc
 	@echo "=== Building PreCompiled Barriers..."
 	g++ -fPIC -c $(CFLAGS) -o $@ $<
@@ -48,5 +48,5 @@ demo: demo_core.cc demo_generator.cc libsteps.so.1.0.1 precompile
 	g++ $(CFLAGS) -o demo demo_core.o demo_generator.o -ldl
 
 clean:
-	rm -f *.o libxtil* libsteps* libprogram* libproduct* demo
+	rm -f *.o *.gch libxtil* libsteps* libprogram* libproduct* demo
 
