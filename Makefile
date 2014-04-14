@@ -26,15 +26,20 @@ libproduct.so.1.0.1: demo_product.cc
 	@echo "=== Building PRODUCT demo..."
 	g++ -fPIC -c $(CFLAGS) demo_product.cc -o demo_product.o
 	g++ $(LDFLAGS) -Wl,-soname,libproduct.so.1 -o libproduct.so.1.0.1 \
-		demo_product.o -L. -lsteps
+		sync_barrier.o demo_product.o -L. -lsteps
 	[ -f libproduct.so.1 ] || ln -s libproduct.so.1.0.1 libproduct.so.1
 	[ -f libproduct.so ]   || ln -s libproduct.so.1.0.1 libproduct.so
 
+precompile: precompiled.h.gch sync_barrier.o
 precompiled.h.gch: precompiled.h
 	@echo "=== Building PreCompiled headers..."
 	g++ $(CFLAGS) -o precompiled.h.gch precompiled.h
+sync_barrier.o: sync_barrier.cc
+	@echo "=== Building PreCompiled Barriers..."
+	g++ -fPIC -c $(CFLAGS) -o $@ $<
 
-demo: demo_core.cc demo_generator.cc libsteps.so.1.0.1 precompiled.h.gch
+
+demo: demo_core.cc demo_generator.cc libsteps.so.1.0.1 precompile
 	@echo "=== Building DEMO CORE..."
 	g++ $(CFLAGS) -c -o demo_core.o demo_core.cc
 	g++ $(CFLAGS) -c -o demo_generator.o demo_generator.cc

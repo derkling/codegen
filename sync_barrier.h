@@ -143,6 +143,8 @@ private:
 
 };
 
+// Supported specializations
+extern template class SyncBarrier<int *>;
 typedef SyncBarrier<int*> IntBarrier_t;
 typedef std::shared_ptr<IntBarrier_t> pIntBarrier_t;
 
