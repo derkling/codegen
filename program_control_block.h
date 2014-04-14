@@ -14,7 +14,7 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 
-#include "sync_barrier.h"
+#include <sync_barrier.h>
 
 class ProgramControlBlock {
 public:
