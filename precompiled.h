@@ -15,9 +15,9 @@
 
 #include <rapidxml.hpp>
 
-#include <demo_core.h>
 #include <demo_steps.h>
 #include <sync_barrier.h>
+#include <program_control_block.h>
 
 // Pre-allocate SyncBarrier templates
 SyncBarrier<int *> IntBarrier(nullptr, nullptr, "__pcIntBarrier", 0);
