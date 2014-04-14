@@ -1,6 +1,11 @@
 
 #include <program_control_block.h>
 
+#if __WORDSIZE == 64
+# define PRIu32 "%lu"
+#else
+# define PRIu32 "%u"
+#endif
 
 ProgramControlBlock::ProgramControlBlock(const char *name) :
 	name(name), tid(0) {
@@ -112,7 +117,7 @@ void ProgramControlBlock::DebugEnd() {
 }
 
 uint8_t ProgramControlBlock::Setup() {
-	printf("[%10s] onSetup, in: %lu, out: %lu\n",
+	printf("[%10s] onSetup, in: " PRIu32 ", out: " PRIu32 "\n",
 			name, in_barriers.size(), out_barriers.size());
 	return 0;
 };

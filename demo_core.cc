@@ -14,6 +14,12 @@ using std::chrono::steady_clock;
 typedef int (*product_entry_t)(int program_id);
 product_entry_t product_run;
 
+#if __WORDSIZE == 64
+# define PRId64 "%ld"
+#else
+# define PRId64 "%lld"
+#endif
+
 
 int main(int argc, const char *argv[])
 {
@@ -47,7 +53,7 @@ int main(int argc, const char *argv[])
 	pg.Parse();
 	pg.Build();
 	clock_stop();
-	fprintf(stderr, ">>> Product build took: %ld[ms]\n\n", clock_ms());
+	fprintf(stderr, ">>> Product build took: " PRId64 "[ms]\n\n", clock_ms());
 
 	// Loading product library
 	fprintf(stderr, "Loading product library [./libproduct.so]... ");
@@ -67,7 +73,7 @@ int main(int argc, const char *argv[])
 	fprintf(stderr, "DONE!\n");
 
 	clock_stop();
-	fprintf(stderr, ">>> Overall product entry latency: %ld[ms]\n\n", clock_ms());
+	fprintf(stderr, ">>> Overall product entry latency: " PRId64 "[ms]\n\n", clock_ms());
 
 	fprintf(stderr, "Running Program ID: %d\n\n", program_id);
 
