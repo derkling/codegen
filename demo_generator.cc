@@ -191,8 +191,8 @@ bool ProductGenerator::Parse() {
 "\n\tDebugCheck();"						\
 "\n"								\
 "\nloop_start:"							\
-"\n\tif (step_out < 0 || step_out >= steps_count)"		\
-"\n\t\tstep_out = steps_count - 1;"				\
+"\n\tif (step_out < 0 || step_out >= pcb_steps_count)"		\
+"\n\t\tstep_out = pcb_steps_count - 2;"				\
 "\n\tif (step_into >= 0)"					\
 "\n\t\tgoto *step[step_into];"					\
 "\n"
@@ -226,7 +226,7 @@ bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {
 			<< i++ << ", ";
 	}
 	product_cfile << "\n\t\t&&loop_start};";
-	product_cfile << "\n\tuint16_t steps_count = (sizeof(step) / sizeof(void*));";
+	product_cfile << "\n\tpcb_steps_count = (sizeof(step) / sizeof(void*)) - 1;";
 	product_cfile << "\n\tpcb_steps = step;";
 
 	// Generate PCB Loop (Code)

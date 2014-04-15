@@ -66,6 +66,7 @@ protected:
 
 
 	void **pcb_steps = nullptr;
+	uint16_t pcb_steps_count = 0;
 	int16_t step_into = -1;
 	int16_t step_out  = -1;
 
