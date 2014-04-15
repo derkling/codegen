@@ -188,7 +188,7 @@ bool ProductGenerator::Parse() {
 "\n"
 
 bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {
-	rx::xml_node<> *node;
+	rx::xml_node<> *node, *inb, *outb, *lb, *step;
 
 	// Get PCB name
 	std::string name(pcb->first_attribute("name")->value());
@@ -214,7 +214,7 @@ bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {
 	// Parse input barriers
 	product_cfile << "\n\t// Input buffers";
 	node = pcb->first_node("pads");
-	rx::xml_node<> *inb = (!node) ? nullptr : node->first_node("in_barrier");
+	inb = (!node) ? nullptr : node->first_node("in_barrier");
 	for (int i = 0 ; inb; inb = inb->next_sibling("in_barrier")) {
 		product_cfile
 			<< "\n\t" << inb->first_attribute("type")->value()
@@ -230,7 +230,7 @@ bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {
 	// Parse output barriers
 	product_cfile << "\n\t// Output buffers";
 	node = pcb->first_node("pads");
-	rx::xml_node<> *outb = (!node) ? nullptr : node->first_node("out_barrier");
+	outb = (!node) ? nullptr : node->first_node("out_barrier");
 	for (int i = 0 ; outb; outb = outb->next_sibling("out_barrier")) {
 		product_cfile
 			<< "\n\t" << outb->first_attribute("type")->value()
@@ -245,7 +245,7 @@ bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {
 	product_cfile << "\n\t// NOTE: These should be recovered via BufferManager";
 	product_cfile << "\n\t//       for the time being this example handles just integer buffers";
 	node = pcb->first_node("buffers");
-	rx::xml_node<> *lb = (!node) ? nullptr : node->first_node("buffer");
+	lb = (!node) ? nullptr : node->first_node("buffer");
 	for ( ; lb; lb = lb->next_sibling("buffer")) {
 		product_cfile
 			<< "\n\t"
@@ -260,7 +260,7 @@ bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {
 
 	// Parse Steps
 	node = pcb->first_node("steps");
-	rx::xml_node<> *step = (!node) ? nullptr : node->first_node("step");
+	step = (!node) ? nullptr : node->first_node("step");
 	for (int i = 0 ; step; step = step->next_sibling("step")) {
 		product_cfile << "\n\t// STEP " << ++i;
 		product_cfile << "\n\tStep(" << step->first_attribute("id")->value();
