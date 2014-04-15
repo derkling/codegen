@@ -63,6 +63,8 @@ protected:
 	std::vector<pIntBarrier_t> in_barriers;
 	std::vector<pIntBarrier_t> out_barriers;
 
+
+	void **pcb_steps = nullptr;
 	int16_t step_into = -1;
 
 private:

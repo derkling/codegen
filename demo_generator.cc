@@ -223,6 +223,7 @@ bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {
 			<< i++ << ", ";
 	}
 	product_cfile << "\n\t};";
+	product_cfile << "\n\tpcb_steps = step;";
 
 	// Generate PCB Loop (Code)
 	product_cfile << PRODUCT_PCB_LOOP_CODE(name);
