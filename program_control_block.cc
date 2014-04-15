@@ -141,6 +141,8 @@ void ProgramControlBlock::DoRepeat() {
 void ProgramControlBlock::DebugEnd() {
 	std::lock_guard<std::mutex> lg(dbg_mtx);
 	debug = false;
+	step_into = 0;
+	step_out = -1;
 	dbg_cv.notify_one();
 }
 
