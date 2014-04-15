@@ -36,10 +36,11 @@ public:
 	bool Debug() const;
 	bool Repeat() const;
 	uint16_t NextSteps() const;
-	void DebugCheck();
+	void DebugCheck(int step_id = -1);
 	void DebugStart(uint16_t steps = 1);
 	void DoStep(uint16_t steps = 1);
 	void SetStepInto(int16_t step_into = -1);
+	void SetStepOut(int16_t step_out = -1);
 	void DoRepeat();
 	void DebugEnd();
 
@@ -47,11 +48,11 @@ public:
 	virtual uint8_t Loop();
 	virtual uint8_t Cleanup();
 
-	template<typename Sfnc, class ...Args>
+	template<int Sid, typename Sfnc, class ...Args>
 	void Step(Sfnc sf, Args... args) {
 		do {
 			sf(args...);
-			DebugCheck();
+			DebugCheck(Sid);
 		} while (Repeat());
 	}
 
@@ -66,6 +67,7 @@ protected:
 
 	void **pcb_steps = nullptr;
 	int16_t step_into = -1;
+	int16_t step_out  = -1;
 
 private:
 

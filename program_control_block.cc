@@ -80,13 +80,30 @@ uint16_t ProgramControlBlock::NextSteps() const {
 	return 1;
 }
 
-void ProgramControlBlock::DebugCheck() {
+void ProgramControlBlock::DebugCheck(int step_id) {
 	std::unique_lock<std::mutex> ul(dbg_mtx);
+
+	// Debug disabled, nothing to do
 	if (!debug)
 		return;
+
+	// Reset step repete mode
 	repeat = false;
-	if (--next_steps == 0)
+
+	// Enter DEBUG after a specified number of steps
+	if (--next_steps == 0) {
 		dbg_cv.wait(ul);
+		return;
+	}
+
+	// Enter DEBUG at specified PCB step
+	if (!pcb_steps)
+		return;
+	if (pcb_steps[step_id] == pcb_steps[step_out]) {
+		dbg_cv.wait(ul);
+		return;
+	}
+
 }
 
 void ProgramControlBlock::DebugStart(uint16_t steps) {
@@ -100,6 +117,10 @@ void ProgramControlBlock::DebugStart(uint16_t steps) {
 
 void ProgramControlBlock::SetStepInto(int16_t sin) {
 	step_into = sin;
+}
+
+void ProgramControlBlock::SetStepOut(int16_t sout) {
+	step_out = sout;
 }
 
 void ProgramControlBlock::DoStep(uint16_t steps) {
