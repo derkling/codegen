@@ -289,7 +289,8 @@ bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {
 	for (int i = 0 ; step; ++i, step = step->next_sibling("step")) {
 		product_cfile << "\n\t// STEP " << i;
 		product_cfile << "\nstep_" << std::setfill('0') << std::setw(4) << i << ":";
-		product_cfile << "\n\tStep<" << i << ">(" << step->first_attribute("id")->value();
+		product_cfile << "\n\tpcb_curr_step = " << i << ";";
+		product_cfile << "\n\tStep(" << step->first_attribute("id")->value();
 
 		rx::xml_node<> *param = step->first_node("param");
 		for ( ; param; param = param->next_sibling("param")) {

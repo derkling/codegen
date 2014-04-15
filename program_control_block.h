@@ -49,11 +49,11 @@ public:
 	virtual uint8_t Loop();
 	virtual uint8_t Cleanup();
 
-	template<int Sid, typename Sfnc, class ...Args>
+	template<typename Sfnc, class ...Args>
 	void Step(Sfnc sf, Args... args) {
 		do {
 			sf(args...);
-			DebugCheck(Sid);
+			DebugCheck(pcb_curr_step);
 		} while (Repeat());
 	}
 
@@ -67,6 +67,7 @@ protected:
 
 
 	void **pcb_steps = nullptr;
+	int pcb_curr_step = 0;
 	uint16_t pcb_steps_count = 0;
 	int16_t step_into = -1;
 	int16_t step_out  = -1;
