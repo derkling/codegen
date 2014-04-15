@@ -189,6 +189,9 @@ bool ProductGenerator::Parse() {
 "\n\t\treturn 1;"						\
 "\n"								\
 "\n\tDebugCheck();"						\
+"\n"								\
+"\n\tif (step_into >= 0)"					\
+"\n\t\tgoto *step[step_into];"					\
 "\n"
 
 bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {

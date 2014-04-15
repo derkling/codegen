@@ -98,6 +98,10 @@ void ProgramControlBlock::DebugStart(uint16_t steps) {
 	dbg_cv.notify_one();
 }
 
+void ProgramControlBlock::SetStepInto(int16_t sin) {
+	step_into = sin;
+}
+
 void ProgramControlBlock::DoStep(uint16_t steps) {
 	std::lock_guard<std::mutex> lg(dbg_mtx);
 	next_steps = debug_steps;

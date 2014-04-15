@@ -39,6 +39,7 @@ public:
 	void DebugCheck();
 	void DebugStart(uint16_t steps = 1);
 	void DoStep(uint16_t steps = 1);
+	void SetStepInto(int16_t step_into = -1);
 	void DoRepeat();
 	void DebugEnd();
 
@@ -61,6 +62,8 @@ protected:
 
 	std::vector<pIntBarrier_t> in_barriers;
 	std::vector<pIntBarrier_t> out_barriers;
+
+	int16_t step_into = -1;
 
 private:
 
