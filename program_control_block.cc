@@ -115,6 +115,17 @@ void ProgramControlBlock::DebugStart(uint16_t steps) {
 	dbg_cv.notify_one();
 }
 
+void ProgramControlBlock::DebugFrom(uint16_t step) {
+	std::lock_guard<std::mutex> lg(dbg_mtx);
+	if (step > pcb_steps_count)
+		step = 0;
+	debug = true;
+	restart = true;
+	SetStepInto(step);
+	SetStepOut(step);
+	dbg_cv.notify_one();
+}
+
 void ProgramControlBlock::SetStepInto(int16_t sin) {
 	step_into = sin;
 }

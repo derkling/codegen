@@ -38,6 +38,7 @@ public:
 	uint16_t NextSteps() const;
 	void DebugCheck(int step_id = -1);
 	void DebugStart(uint16_t steps = 1);
+	void DebugFrom(uint16_t step);
 	void DoStep(uint16_t steps = 1);
 	void SetStepInto(int16_t step_into = -1);
 	void SetStepOut(int16_t step_out = -1);
@@ -69,6 +70,7 @@ protected:
 	uint16_t pcb_steps_count = 0;
 	int16_t step_into = -1;
 	int16_t step_out  = -1;
+	bool restart = false;
 
 private:
 

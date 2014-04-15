@@ -191,6 +191,7 @@ bool ProductGenerator::Parse() {
 "\n\tDebugCheck();"						\
 "\n"								\
 "\nloop_start:"							\
+"\n\trestart = false;"						\
 "\n\tif (step_out < 0 || step_out >= pcb_steps_count)"		\
 "\n\t\tstep_out = pcb_steps_count - 2;"				\
 "\n\tif (step_into >= 0)"					\
@@ -296,7 +297,8 @@ bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {
 				<< param->first_attribute("type")->value()
 				<< ">(" << param->first_attribute("value")->value() << ")";
 		}
-		product_cfile << ");" << std::endl;
+		product_cfile << ");"
+			<< "\n\tif (restart) goto loop_start;" << std::endl;
 	}
 
 	product_cfile << "\n\n\t" << std::string(80, '/');
