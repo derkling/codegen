@@ -47,6 +47,26 @@ demo: demo_core.cc demo_generator.cc libsteps.so.1.0.1 precompile
 	g++ $(CFLAGS) -c -o demo_generator.o demo_generator.cc
 	g++ $(CFLAGS) -o demo demo_core.o demo_generator.o -ldl
 
+PHONY: test100 test300 test1000
+test100:
+	@echo "=== Test [100 steps] build time"
+	@for i in `seq 10`; do \
+		./demo build_test_100.xml 2>&1 | \
+		grep '>>> Product build'; \
+	done
+test300:
+	@echo "=== Test [300 steps] build time"
+	@for i in `seq 10`; do \
+		./demo build_test_300.xml 2>&1 | \
+		grep '>>> Product build'; \
+	done
+test1000:
+	@echo "=== Test [1000 steps] build time"
+	@for i in `seq 10`; do \
+		./demo build_test_1000.xml 2>&1 | \
+		grep '>>> Product build'; \
+	done
+
 clean:
 	rm -f *.o *.gch libxtil* libsteps* libprogram* libproduct* demo
 
