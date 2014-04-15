@@ -190,6 +190,7 @@ bool ProductGenerator::Parse() {
 "\n"								\
 "\n\tDebugCheck();"						\
 "\n"								\
+"\nloop_start:"							\
 "\n\tif (step_out < 0 || step_out >= steps_count)"		\
 "\n\t\tstep_out = steps_count - 1;"				\
 "\n\tif (step_into >= 0)"					\
@@ -224,7 +225,7 @@ bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {
 		product_cfile << "&&step_" << std::setfill('0') << std::setw(4)
 			<< i++ << ", ";
 	}
-	product_cfile << "\n\t};";
+	product_cfile << "\n\t\t&&loop_start};";
 	product_cfile << "\n\tuint16_t steps_count = (sizeof(step) / sizeof(void*));";
 	product_cfile << "\n\tpcb_steps = step;";
 
