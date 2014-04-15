@@ -180,6 +180,10 @@ bool ProductGenerator::Parse() {
 "\n\treturn 0;"							\
 "\n}"								\
 "\nuint8_t " << NAME << "::Loop() {"				\
+"\n\tvoid *step[] = {"
+
+#define PRODUCT_PCB_LOOP_CODE(NAME)				\
+"\n"								\
 "\n\tprintf(\"[%10s] Loops remaining %d\\n\", name, loops--);"	\
 "\n\tif (loops <= 0)"						\
 "\n\t\treturn 1;"						\
@@ -205,8 +209,20 @@ bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {
 	product_cfile << PRODUCT_PCB_CLEANUP(name);
 	// TODO add here PCB Cleanup generation
 
-	// Generate PCB Loop
+	// Generate PCB Loop (Setup)
 	product_cfile << PRODUCT_PCB_LOOP(name);
+	node = pcb->first_node("steps");
+	step = (!node) ? nullptr : node->first_node("step");
+	for (int i = 0 ; step; step = step->next_sibling("step")) {
+		if (!(i % 10))
+			product_cfile << "\n\t\t";
+		product_cfile << "&&step_" << std::setfill('0') << std::setw(4)
+			<< i++ << ", ";
+	}
+	product_cfile << "\n\t};";
+
+	// Generate PCB Loop (Code)
+	product_cfile << PRODUCT_PCB_LOOP_CODE(name);
 
 	product_cfile << "\n\n\t" << std::string(80, '/');
 	product_cfile << "\n\t// Consumer Buffers PULL" << std::endl;
@@ -263,6 +279,7 @@ bool ProductGenerator::ParsePCB(rapidxml::xml_node<>* pcb) {
 	step = (!node) ? nullptr : node->first_node("step");
 	for (int i = 0 ; step; step = step->next_sibling("step")) {
 		product_cfile << "\n\t// STEP " << ++i;
+		product_cfile << "\nstep_" << std::setfill('0') << std::setw(4) << i-1 << ":";
 		product_cfile << "\n\tStep(" << step->first_attribute("id")->value();
 
 		rx::xml_node<> *param = step->first_node("param");
