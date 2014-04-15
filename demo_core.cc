@@ -79,6 +79,9 @@ int main(int argc, const char *argv[])
 	fprintf(stderr, ">>> Overall product entry latency: " PRId64 "[ms]\n\n", clock_ms());
 
 	fprintf(stderr, "Running Program ID: %d\n\n", program_id);
+	// product_run(program_id);
+	fprintf(stderr, "NOTE: Uncomment line %s:%d to enable program execution\n",
+			__FILE__, __LINE__-2);
 
 	dlclose(product_library);
 	return 0;
