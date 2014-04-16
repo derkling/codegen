@@ -1,0 +1,43 @@
+Codegen
+=======
+
+A proof-of-concept implementation for a polymorphic stream-processing execution
+engine.
+
+
+Usage
+=====
+
+Build with
+
+  $ make demo
+
+this will generate the 'demo' core engine which provides support for XML to C++
+code generation as well as the flow to build and run one of the programs
+defined within the XML descriptor.
+
+To run a demo:
+
+ $ ./demo <xml_poduct>
+
+
+Testing
+=======
+
+To profile timing for code generation a couple of simple Make targets have been
+provided. The examples generate sample code, compile it, link it with the core
+engine and jump to the program entry point.
+Test examples are provided by XML files names build_N.xml where N = {100, 300, 1000}
+is the number of program step to generate.
+
+Run the tests with:
+
+  $ make test100 test300 test1000
+
+NOTE: this profiling should be preferably done at a fixed CPU frequency.
+On a Linux machine, the provided setfreq shell script could be used to set
+the CPU governor to usermode and select one of the supported frequencies.
+For example:
+
+  # ./setfreq.sh userspace 700000
+
